@@ -40,8 +40,7 @@ header::before {
   border-radius: 20px; padding: 4px 14px; font-size: 12px; color: var(--gold-light);
   font-weight: 700; letter-spacing: .05em; margin-bottom: 12px;
 }
-.header-title { font-family: 'Playfair Display', 'Noto Serif JP', serif; font-size: clamp(16px,3.5vw,26px); font-weight: 700; color: #fff; line-height: 1.3; margin-bottom: 4px; }
-.header-title-sub { font-family: 'Noto Serif JP', serif; font-size: clamp(14px,3vw,20px); font-weight: 700; color: rgba(255,255,255,.9); margin-bottom: 6px; }
+.header-title { font-family: 'Playfair Display', 'Noto Serif JP', serif; font-size: clamp(16px,4vw,26px); font-weight: 700; color: #fff; line-height: 1.3; margin-bottom: 6px; }
 .header-sub { font-size: 13px; color: rgba(255,255,255,.7); margin-bottom: 16px; }
 .header-info { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 18px; font-size: 13px; color: rgba(255,255,255,.85); }
 .header-info span { display: flex; align-items: center; gap: 5px; }
@@ -108,7 +107,8 @@ header::before {
 .form-group input[type=text],
 .form-group input[type=email],
 .form-group input[type=tel],
-.form-group input[type=date] {
+.form-group input[type=date],
+.form-group input[type=number] {
   width: 100%; padding: 10px 14px; border: 1.5px solid var(--border);
   border-radius: 8px; font-size: 15px; font-family: inherit; background: #f9fafb;
   color: var(--text); outline: none; transition: .2s;
@@ -193,7 +193,7 @@ input[readonly] { background: #f0f2f7; color: var(--text-muted); cursor: default
   border: 3px solid #fff; border-top: none; border-left: none;
   transform: rotate(45deg) translate(-1px,-2px);
 }
-.ev-no    { font-size: 15px; font-weight: 700; color: var(--text-muted); }
+.ev-no    { font-size: 15px; font-weight: 700; color: var(--text-muted); margin-top: 4px; }
 .ev-grade { font-size: 14px; font-weight: 700; padding: 3px 10px; border-radius: 4px; display: inline-block; margin-bottom: 3px; }
 .ev-name  { font-size: 16px; font-weight: 700; color: var(--text); }
 .ev-price { font-size: 15px; color: var(--gold); font-weight: 700; }
@@ -219,9 +219,14 @@ input[readonly] { background: #f0f2f7; color: var(--text-muted); cursor: default
 
 /* 振込情報カード */
 .furikomi-fields {
-  display: grid; grid-template-columns: 220px minmax(0, 220px); gap: 0 20px; align-items: start;
+  display: grid; grid-template-columns: 220px minmax(0, 220px) minmax(0, 220px); gap: 0 20px; align-items: start;
 }
-@media(max-width:540px) { .furikomi-fields { grid-template-columns: 1fr; } }
+@media(max-width:640px) { .furikomi-fields { grid-template-columns: 1fr; } }
+
+/* 振込金額入力欄 */
+.fee-input-wrap { display: flex; align-items: center; gap: 6px; }
+.fee-input-wrap input { max-width: 180px; }
+.fee-yen { font-size: 18px; font-weight: 700; color: var(--gold); flex-shrink: 0; }
 
 /* 注意事項 */
 .caution-box {
@@ -283,8 +288,8 @@ input[readonly] { background: #f0f2f7; color: var(--text-muted); cursor: default
 <header>
   <div class="header-inner">
     <div class="header-badge"><i class="fas fa-award"></i> JDC公認 № 202609</div>
-    <div class="header-title">北國新聞社杯争奪</div>
-    <div class="header-title-sub">2026 中部ダンスフェスティバル in 金沢</div>
+    <div class="header-title">北國新聞社杯争奪 2026 中部ダンスフェスティバル in 金沢</div>
+    <div class="header-sub">主管：JDC中部総局 石川県支局</div>
     <div class="header-info">
       <span><i class="fas fa-calendar-alt"></i> 令和8年4月5日（日）10:30〜14:00（予定）</span>
       <span><i class="fas fa-map-marker-alt"></i> 石川県立音楽堂 B1 交流ホール</span>
@@ -309,7 +314,7 @@ input[readonly] { background: #f0f2f7; color: var(--text-muted); cursor: default
     <div class="notice">
       <i class="fas fa-info-circle"></i>
       必要事項をご入力の上、確認画面へお進みください。<strong>※印</strong>は必須項目です。<br>
-      出場料をご入金後、振込日と振込人名を必ずご記入ください。
+      出場料をご入金後、振込日・振込人名・振込金額を必ずご記入ください。
     </div>
 
     <!-- 選手情報カード -->
@@ -456,6 +461,14 @@ input[readonly] { background: #f0f2f7; color: var(--text-muted); cursor: default
             <input type="text" id="transferName" placeholder="例：ヤマダ タロウ">
             <div class="err-msg" id="transferName-err">振込人名を入力してください</div>
           </div>
+          <div class="form-group">
+            <label>振込金額<span class="req">*</span></label>
+            <div class="fee-input-wrap">
+              <span class="fee-yen">¥</span>
+              <input type="number" id="transferFee" placeholder="例：10000" min="0" step="1000" style="max-width:180px;">
+            </div>
+            <div class="err-msg" id="transferFee-err">振込金額を入力してください</div>
+          </div>
         </div>
       </div>
     </div>
@@ -466,9 +479,9 @@ input[readonly] { background: #f0f2f7; color: var(--text-muted); cursor: default
       <ul>
         <li>出場申込締切は<strong>令和8年3月6日（金）必着</strong>です。</li>
         <li>各セクションにおいて、出場組数によっては中止の場合があります。</li>
-        <li>オープン区分の出場料は6,000円、その他は1区分5,000円です。他団体登録のプロフェッショナル選手は10,000円。</li>
+        <li>オープン区分の出場料は6,000円、その他1区分につき5,000円です。</li>
+        <li>他団体登録のプロフェッショナル選手は10,000円です。</li>
         <li>納入された出場料は原則として返金できません。</li>
-        <li>登録選手の各部門内における上位挑戦は認められます。</li>
         <li>送信後、確認メールが自動送信されます。届かない場合はJDC中部総局石川県支局にご連絡ください。</li>
       </ul>
     </div>
@@ -497,6 +510,7 @@ input[readonly] { background: #f0f2f7; color: var(--text-muted); cursor: default
           <tr><th>合計出場料</th><td id="c-total" class="total-confirm"></td></tr>
           <tr><th>振込日</th><td id="c-transferDate"></td></tr>
           <tr><th>振込人名</th><td id="c-transferName"></td></tr>
+          <tr><th>振込金額</th><td id="c-transferFee" class="total-confirm"></td></tr>
         </table>
         <button type="button" class="btn-back" onclick="goBack()"><i class="fas fa-arrow-left"></i> 入力画面に戻る</button>
         <button type="button" class="btn-submit" id="submitBtn" onclick="submitForm()">
@@ -522,7 +536,8 @@ input[readonly] { background: #f0f2f7; color: var(--text-muted); cursor: default
           郵便振替：日本ダンス議会中部総局石川県支局　口座番号：00790-4-93947<br>
           ※通信欄に「令和8年4月5日 中部ダンスフェスティバル」と必ずご記入ください<br><br>
           <strong><i class="fas fa-phone" style="color:var(--accent);"></i> お問い合わせ</strong><br>
-          JDC中部総局石川県支局　TEL：076-268-3322 / FAX：076-268-3548<br>
+          JDC中部総局石川県支局 大会事務局<br>
+          TEL：076-268-3322　FAX：076-268-3548<br>
           〒920-0348 石川県金沢市松村1-294 竹内ダンススクール内
         </div>
       </div>
@@ -551,6 +566,7 @@ var selectedEvents = {};
 
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbygAVM_Dhc4DkL0QnP6obLnczi9LTL8wBuPPL2g_ZCcqVgVxUGlwUim8Lw1u8Rh6lAl/exec';
 
+// 登録番号入力ハンドラ
 function handleRegInput(el, nextId) {
   el.value = el.value
     .replace(/[０-９]/g, function(s) { return String.fromCharCode(s.charCodeAt(0) - 0xFEE0); })
@@ -567,6 +583,7 @@ function getRegNo(p1Id, p2Id) {
   return (p1 || '') + (p2 || '');
 }
 
+// 競技カード生成
 function buildEvCards() {
   var allEv = proData.ballroom.concat(proData.latin);
   allEv.sort(function(a, b) { return a.no - b.no; });
@@ -626,6 +643,7 @@ function updateTotal() {
   document.getElementById('totalDisplay').textContent = '¥' + total.toLocaleString();
 }
 
+// 住所検索（3段階フォールバック）
 async function searchZip() {
   var zip = document.getElementById('zip').value.replace(/[^0-9]/g, '');
   if (zip.length !== 7) { showErr('zip-err', true); return; }
@@ -674,11 +692,13 @@ async function searchZip() {
   alert('自動検索ができませんでした。\n都道府県・市区町村を直接入力してください。');
 }
 
+// エラー表示
 function showErr(id, show) {
   var el = document.getElementById(id);
   if (el) el.classList.toggle('show', show);
 }
 
+// バリデーション
 function validate() {
   var ok = true;
   function req(id) {
@@ -709,9 +729,13 @@ function validate() {
   var td = document.getElementById('transferDate').value.trim();
   showErr('transferDate-err', !td); if (!td) ok = false;
   req('transferName');
+  var tf = document.getElementById('transferFee').value.trim();
+  var tfBad = !tf || isNaN(parseInt(tf)) || parseInt(tf) <= 0;
+  showErr('transferFee-err', tfBad); if (tfBad) ok = false;
   return ok;
 }
 
+// 確認画面へ
 function goConfirm() {
   if (!validate()) {
     var firstErr = document.querySelector('.err-msg.show');
@@ -734,8 +758,10 @@ function goConfirm() {
 
   var tdRaw = document.getElementById('transferDate').value;
   var tdDisp = '';
-  if (tdRaw) { var parts = tdRaw.split('-'); tdDisp = parts[0] + '年' + parts[1] + '月' + parts[2] + '日'; }
+  if (tdRaw) { var parts = tdRaw.split('-'); tdDisp = parts[0] + '年' + parseInt(parts[1]) + '月' + parseInt(parts[2]) + '日'; }
   var transferName = document.getElementById('transferName').value.trim();
+  var transferFeeRaw = parseInt(document.getElementById('transferFee').value.trim()) || 0;
+  var transferFeeDisp = '¥' + transferFeeRaw.toLocaleString();
 
   document.getElementById('c-regLeader').textContent    = regLeader;
   document.getElementById('c-regPartner').textContent   = regPartner;
@@ -748,6 +774,7 @@ function goConfirm() {
   document.getElementById('c-email').textContent        = emailVal;
   document.getElementById('c-transferDate').textContent = tdDisp;
   document.getElementById('c-transferName').textContent = transferName;
+  document.getElementById('c-transferFee').textContent  = transferFeeDisp;
 
   var total = 0;
   Object.values(selectedEvents).forEach(function(ev) { total += ev.price; });
@@ -756,7 +783,7 @@ function goConfirm() {
   var evTd = document.getElementById('c-events');
   evTd.innerHTML = '';
   var allEv = proData.ballroom.concat(proData.latin);
-  allEv.sort(function(a,b){ return a.no-b.no; });
+  allEv.sort(function(a,b){return a.no-b.no;});
   allEv.forEach(function(ev) {
     if (selectedEvents[ev.id]) {
       var tag = document.createElement('span');
@@ -774,6 +801,7 @@ function goConfirm() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// 戻る
 function goBack() {
   document.getElementById('confirmView').style.display = 'none';
   document.getElementById('formView').style.display    = 'block';
@@ -783,6 +811,7 @@ function goBack() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// 送信
 async function submitForm() {
   var btn = document.getElementById('submitBtn');
   btn.disabled = true;
@@ -805,13 +834,15 @@ async function submitForm() {
 
   var tdRaw = document.getElementById('transferDate').value;
   var tdDisp = '';
-  if (tdRaw) { var parts = tdRaw.split('-'); tdDisp = parts[0] + '年' + parts[1] + '月' + parts[2] + '日'; }
+  if (tdRaw) { var parts = tdRaw.split('-'); tdDisp = parts[0] + '年' + parseInt(parts[1]) + '月' + parseInt(parts[2]) + '日'; }
   var transferName = document.getElementById('transferName').value.trim();
+  var transferFeeRaw = parseInt(document.getElementById('transferFee').value.trim()) || 0;
+  var transferFeeDisp = '¥' + transferFeeRaw.toLocaleString();
 
   var total = 0;
   var selEvList = [];
   var allEv = proData.ballroom.concat(proData.latin);
-  allEv.sort(function(a,b){ return a.no-b.no; });
+  allEv.sort(function(a,b){return a.no-b.no;});
   allEv.forEach(function(ev) {
     if (selectedEvents[ev.id]) {
       total += ev.price;
@@ -833,7 +864,8 @@ async function submitForm() {
     '出場競技：\n' + selEvList.join('\n') + '\n' +
     '合計：¥' + total.toLocaleString() + '\n' +
     '振込日：' + tdDisp + '\n' +
-    '振込人名：' + transferName;
+    '振込人名：' + transferName + '\n' +
+    '振込金額：' + transferFeeDisp;
 
   var gasPayload = {
     regLeader:    regLeader,
@@ -851,6 +883,7 @@ async function submitForm() {
     email:        emailVal,
     transferDate: tdDisp,
     transferName: transferName,
+    transferFee:  transferFeeDisp,
   };
 
   var params = {
@@ -889,6 +922,7 @@ async function submitForm() {
   }
 }
 
+// 初期化
 window.addEventListener('DOMContentLoaded', function() { buildEvCards(); });
 </script>
 </body>
